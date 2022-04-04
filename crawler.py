@@ -18,8 +18,8 @@ class WebCrawler:
         self.main_url = self.config['info']['main_url']
         self.img_folder = self.config['info']['img_folder']
 
-        self.token = config['slack']['token']
-        self.channel = config['slack']['channel']
+        self.token = self.config['slack']['token']
+        self.channel = self.config['slack']['channel']
 
     def crawl(self):
         options = webdriver.ChromeOptions()
@@ -92,7 +92,7 @@ class WebCrawler:
             self.config.write(conf_file)
 
     def upload(self, filename):
-        client = slack.WebClient(token=token)
+        client = slack.WebClient(token=self.token)
         response = client.files_upload(
             channels=self.channel,
             file = self.img_folder+'/'+filename,
