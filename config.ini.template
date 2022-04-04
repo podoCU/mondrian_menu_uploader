@@ -4,3 +4,6 @@ target =
 main_url = https://pf.kakao.com/_Hvxbis
 img_folder = 
 
+[slack]
+token = xoxb-yourtoken
+channel = #channel-name
