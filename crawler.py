@@ -62,9 +62,11 @@ class WebCrawler:
             if i == len(addr_list)-1:
                 break
             i += 1
-
+        final_number = 0
+        temp_text=''
         for i in addr_list:
             temp_num = i.split("_Hvxbis/")[1]
+            
             if int(temp_num) > self.number:
                 driver.get(self.main_url + '/' + temp_num)
                 time.sleep(1)
@@ -83,11 +85,18 @@ class WebCrawler:
                     urlretrieve(url3, (self.img_folder+'/'+text+'.jpg'))
                     print(url3)
 
-                    self.upload(text+'.jpg')
-
-                    self.number = int(temp_num)
-
-        self.config['info']['number'] = str(self.number)
+                    #처음일떄 컨티뉴
+                    if temp_text == '':
+                        temp_text = text
+                        final_number = temp_num
+                        continue
+                    if temp_text == text:
+                        self.upload(text+'.jpg')
+                        break
+                    if temp_text != text:
+                        self.upload(temp_text+'.jpg')
+                        break
+        self.config['info']['number'] = final_number
         with open('config.ini','wt',encoding='utf8') as conf_file:
             self.config.write(conf_file)
 
@@ -98,7 +107,7 @@ class WebCrawler:
             file = self.img_folder+'/'+filename,
             title=filename,
             filetype='jpg'
-)
+            )
 
 crawler = WebCrawler()
 crawler.crawl()
