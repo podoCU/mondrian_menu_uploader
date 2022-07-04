@@ -5,12 +5,15 @@ import time
 from urllib.request import urlretrieve
 import slack
 
+# absolute path of config.ini
+config_url = "/home/sysadm/Documents/mondrian_menu_uploader/config.ini"
+
 
 class WebCrawler:
     def __init__(self):
         # prev number
         self.config = configparser.ConfigParser()
-        self.config.read("/home/sysadm/Documents/mondrian_menu_uploader/config.ini", encoding="utf8")
+        self.config.read(config_url, encoding="utf8")
         self.whitelist = [".", " "]
 
         self.number = int(self.config["info"]["number"])
@@ -47,10 +50,8 @@ class WebCrawler:
 
         for i in class_list:
             try:
-                # print(class_list[i].find_element(by=By.TAG_NAME, value='a'))
                 temp = i.find_element(by=By.TAG_NAME, value="a")
                 addr_list.append(temp.get_attribute("href"))
-                # print(temp.get_attribute('href'))
             except:
 
                 continue
@@ -94,9 +95,8 @@ class WebCrawler:
 
         self.config["info"]["number"] = str(final_number)
         if final_number != 0:
-            with open("/home/sysadm/Documents/mondrian_menu_uploader/config.ini", "wt", encoding="utf8") as conf_file:
+            with open(config_url, "wt", encoding="utf8") as conf_file:
                 self.config.write(conf_file)
-            print('number changed to',str(final_number))
 
     def upload(self, filename):
         client = slack.WebClient(token=self.token)
