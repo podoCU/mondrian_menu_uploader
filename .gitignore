@@ -3,3 +3,6 @@ config.ini
 *.jpg
 test.ipynb
 .DS_Store
+*.log
+*.sh
+chromedriver

@@ -10,7 +10,7 @@ class WebCrawler:
     def __init__(self):
         # prev number
         self.config = configparser.ConfigParser()
-        self.config.read("config.ini", encoding="utf8")
+        self.config.read("/home/sysadm/Documents/mondrian_menu_uploader/config.ini", encoding="utf8")
         self.whitelist = [".", " "]
 
         self.number = int(self.config["info"]["number"])
@@ -26,8 +26,9 @@ class WebCrawler:
     def crawl(self):
         options = webdriver.ChromeOptions()
 
-        options.add_argument("headless")
-        options.add_argument("disable-gpu")
+        options.add_argument("--headless")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--no-sandbox")
 
         driver = webdriver.Chrome(self.target, options=options)
         driver.get(self.main_url)
@@ -91,32 +92,11 @@ class WebCrawler:
                     if final_number == 0:
                         final_number = temp_num
 
-                # result = re.match('\d{1,2}월\D*\d{1,2}일', text)
-                # if result != None:
-                #     text = result.group()
-                #     for j in self.whitelist:
-                #         text = text.replace(j, '')
-                #     print(i, text)
-                #     url = driver.find_elements(by=By.CLASS_NAME, value='wrap_thumb')
-                #     url2 = url[1].find_element(by=By.TAG_NAME, value='img')
-                #     url3 = url2.get_attribute('src')
-                #     urlretrieve(url3, (self.img_folder+'/'+text+'.jpg'))
-                #     print(url3)
-
-                #     #처음일떄 컨티뉴
-                #     if temp_text == '':
-                #         temp_text = text
-                #         final_number = temp_num
-                #         continue
-                #     if temp_text == text:
-                #         self.upload(text+'.jpg')
-                #         break
-                #     if temp_text != text:
-                #         self.upload(temp_text+'.jpg')
-                #         break
         self.config["info"]["number"] = str(final_number)
-        with open("config.ini", "wt", encoding="utf8") as conf_file:
-            self.config.write(conf_file)
+        if final_number != 0:
+            with open("/home/sysadm/Documents/mondrian_menu_uploader/config.ini", "wt", encoding="utf8") as conf_file:
+                self.config.write(conf_file)
+            print('number changed to',str(final_number))
 
     def upload(self, filename):
         client = slack.WebClient(token=self.token)
@@ -126,7 +106,6 @@ class WebCrawler:
             title=filename,
             filetype="jpg",
         )
-
 
 crawler = WebCrawler()
 crawler.crawl()
