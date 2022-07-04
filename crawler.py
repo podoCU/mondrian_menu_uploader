@@ -110,3 +110,4 @@ class WebCrawler:
 crawler = WebCrawler()
 crawler.crawl()
 print(time.strftime("%c", time.localtime(time.time())))
+print('-----------------------------')

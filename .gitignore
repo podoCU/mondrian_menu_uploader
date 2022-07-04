@@ -1,6 +1,7 @@
 
 config.ini
 *.jpg
+*.png
 test.ipynb
 .DS_Store
 *.log
