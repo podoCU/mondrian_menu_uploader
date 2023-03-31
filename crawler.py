@@ -6,7 +6,7 @@ from urllib.request import urlretrieve
 import slack
 
 # absolute path of config.ini
-config_url = "/home/sysadm/Documents/mondrian_menu_uploader/config.ini"
+config_url = "/home/sysadm/mondrian_menu_uploader/config.ini"
 
 
 class WebCrawler:
@@ -19,6 +19,7 @@ class WebCrawler:
         self.number = int(self.config["info"]["number"])
         self.target = self.config["info"]["target"]
         self.main_url = self.config["info"]["main_url"]
+        self.url_token = self.main_url.split("pf.kakao.com/")[1]
         self.img_folder = self.config["info"]["img_folder"]
 
         self.token = self.config["slack"]["token"]
@@ -30,8 +31,9 @@ class WebCrawler:
         options = webdriver.ChromeOptions()
 
         options.add_argument("--headless")
-        options.add_argument("--disable-gpu")
+        options.add_argument("--single-process")
         options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
 
         driver = webdriver.Chrome(self.target, options=options)
         driver.get(self.main_url)
@@ -68,7 +70,7 @@ class WebCrawler:
             i += 1
         final_number = 0
         for i in addr_list:
-            temp_num = i.split("_Hvxbis/")[1]
+            temp_num = i.split(self.url_token + '/')[1]
 
             if int(temp_num) > self.number:
                 driver.get(self.main_url + "/" + temp_num)
@@ -78,7 +80,7 @@ class WebCrawler:
                     text = driver.find_element(by=By.CLASS_NAME, value="desc_post").text
 
                 print(text)
-                if (text.find("월") != -1) and (text.find("일") != -1):
+                if (text.find("월") != -1) and (text.find("일") != -1) and (text.find("토") == -1) and (text.find("점심") != -1):
                     text = text.split("일")[0] + "일"
                     for j in self.whitelist:
                         text = text.replace(j, "")
@@ -88,10 +90,11 @@ class WebCrawler:
                     url3 = url2.get_attribute("src")
                     urlretrieve(url3, (self.img_folder + "/" + text + ".jpg"))
                     print(url3)
-
+                    print(self.number)
                     self.upload(text + ".jpg")
                     if final_number == 0:
                         final_number = temp_num
+                    break
 
         self.config["info"]["number"] = str(final_number)
         if final_number != 0:
