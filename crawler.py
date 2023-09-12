@@ -42,7 +42,7 @@ class WebCrawler:
         addr_list = []
         time.sleep(1)
         while 1:
-            class_list = driver.find_elements(by=By.CLASS_NAME, value="wrap_thumb")
+            class_list = driver.find_elements(by=By.CLASS_NAME, value="box_list_board")
             if len(class_list) == 0:
                 time.sleep(1)
                 print("loading...")
@@ -89,8 +89,6 @@ class WebCrawler:
                     url2 = url[1].find_element(by=By.TAG_NAME, value="img")
                     url3 = url2.get_attribute("src")
                     urlretrieve(url3, (self.img_folder + "/" + text + ".jpg"))
-                    print(url3)
-                    print(self.number)
                     self.upload(text + ".jpg")
                     if final_number == 0:
                         final_number = temp_num
@@ -100,6 +98,7 @@ class WebCrawler:
         if final_number != 0:
             with open(config_url, "wt", encoding="utf8") as conf_file:
                 self.config.write(conf_file)
+        print(final_number)
 
     def upload(self, filename):
         client = slack.WebClient(token=self.token)
